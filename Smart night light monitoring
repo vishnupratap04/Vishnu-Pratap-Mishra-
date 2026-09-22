@@ -1,0 +1,103 @@
+import network
+
+import time
+
+import urequests
+
+from machine import ADC, Pin
+
+
+
+
+# Wi-Fi
+
+WIFI_SSID = "Wokwi-GUEST"
+
+WIFI PASSWORD = ""
+
+
+
+# ThingSpeak
+
+WRITE_API_KEY = "PXW9YOG8T7ZV8VD8"
+
+
+
+
+# LDR connected to GPIO 34
+
+ldr = ADC(Pin(34))
+
+ldr.atten (ADC.ATTN_11DB)
+
+ldr.width(ADC.WIDTH_12BIT)
+
+
+
+# Connect Wi-Fi
+
+wifi = network.WLAN(network.STA_IF) wifi.active(True)
+
+print("Connecting to Wi-Fi...")
+
+
+wifi.connect(WIFI_SSID, WIFI_PASSWORD)
+
+
+while not wifi.isconnected():
+
+
+
+print(".", end="")
+
+time.sleep(0.5)
+
+
+
+
+print()
+
+print("Wi-Fi Connected!")
+
+print("IP Address:", wifi.ifconfig() [0])
+
+# Send LDR data
+
+while True:
+
+
+ldr_value = ldr.read()
+
+
+print("LDR Value:", ldr_value)
+
+url = (
+
+
+"https://api.thingspeak.com/update"
+
+"?api_key=" + WRITE_API_KEY +
+
+"&field1=" + str(ldr_value)
+
+
+try:
+
+
+response
+
+= urequests.get(url)
+
+
+print("ThingSpeak
+
+response:",
+
+response.text)
+
+
+response.close()
+
+except Exception as e: print("Error:", e)
+
+time.sleep(15)
